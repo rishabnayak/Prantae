@@ -9,6 +9,9 @@
     "express": "^4.16.3",
     "getusermedia": "^2.0.1",
     "http": "0.0.0",
+    "opencv2": "^5.0.1",
+    "pillow-js": "^1.5.28",
+    "pyextjs": "^0.1.2",
     "socket.io": "^2.1.0"
   },
   "devDependencies": {},

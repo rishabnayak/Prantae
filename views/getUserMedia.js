@@ -4,18 +4,29 @@
   var video = document.querySelector('video'), canvas;
   canvas = document.getElementById('canvas');
   // use MediaDevices API
-  function dataURLtoBlob(dataurl) {
-      var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-      while(n--){
-          u8arr[n] = bstr.charCodeAt(n);
+  function dataURItoBlob(dataURI) {
+      // convert base64/URLEncoded data component to raw binary data held in a string
+      var byteString;
+      if (dataURI.split(',')[0].indexOf('base64') >= 0)
+          byteString = atob(dataURI.split(',')[1]);
+      else
+          byteString = unescape(dataURI.split(',')[1]);
+
+      // separate out the mime component
+      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+      // write the bytes of the string to a typed array
+      var ia = new Uint8Array(byteString.length);
+      for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
       }
-      return new Blob([u8arr], {type:mime});
+
+      return new Blob([ia], {type:mimeString});
   }
   // docs: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
   if (navigator.mediaDevices) {
     // access the web cam
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: {exact: 640}, height: {exact: 480} } })
     // permission granted:
       .then(function(stream) {
         video.srcObject = stream;
@@ -35,29 +46,28 @@
           delta = now - then;
           if (delta > interval){
             then = now - (delta % interval);
-            context.drawImage(video, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            var data = canvas.toDataURL('image/jpeg');
-            var img = data.split(",")[1];
-            socket.emit('image',img);
+            context.drawImage(video, 295.69, 187.09, CANVAS_WIDTH, CANVAS_HEIGHT, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            var origData = context.getImageData(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
+            var channel = [];
+            var sum = 0;
+            var avg;
+            var out;
+            for (var i = 0; i < origData.data.length; i+=4) {
+              origData.data[i] = 0;
+              origData.data[i+1] = 0;
+              origData.data[i+3] = 0;
+            }
+            for (var i = 0; i < origData.data.length; i++){
+              sum = sum+origData.data[i];
+            }
+            avg = sum/(CANVAS_WIDTH*CANVAS_HEIGHT);
+            out = avg.toFixed(2);
+            socket.emit('output',out);
           }
         };
         rafId = requestAnimationFrame(drawVideoFrame);
-        socket.on('response1',function(write){
+        socket.on('response',function(write){
           document.getElementById('p1').innerHTML = write;
-          var msg = new SpeechSynthesisUtterance(write);
-        });
-        socket.on('response2',function(write){
-          document.getElementById('p2').innerHTML = write;
-          var msg = new SpeechSynthesisUtterance(write);
-          window.speechSynthesis.speak(msg);
-        });
-        socket.on('response3',function(write){
-          document.getElementById('p3').innerHTML = write;
-          var msg = new SpeechSynthesisUtterance(write);
-        });
-        socket.on('response4',function(write){
-          document.getElementById('p4').innerHTML = write;
-          var msg = new SpeechSynthesisUtterance(write);
         });
       })
       // permission denied:
