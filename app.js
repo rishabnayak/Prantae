@@ -14,8 +14,14 @@ io.on('connection',function(socket){
     socket.on('disconnect',() => {
       console.log('user disconnected');
     });
-    socket.on('output', function(out){
-        io.emit('response',out);
+    socket.on('sum', function(sum, CANVAS_WIDTH, CANVAS_HEIGHT){
+      var avg;
+      var out;
+      var conc;
+      avg = sum/(CANVAS_WIDTH*CANVAS_HEIGHT);
+      conc = (avg-0.5557)/0.3883;
+      out = conc.toFixed(2);
+      io.emit('response',out);
     });
 });
 http.listen(8080, () => {

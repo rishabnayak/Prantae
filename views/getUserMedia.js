@@ -48,21 +48,16 @@
             then = now - (delta % interval);
             context.drawImage(video, 295.69, 187.09, CANVAS_WIDTH, CANVAS_HEIGHT, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             var origData = context.getImageData(0,0,CANVAS_WIDTH, CANVAS_HEIGHT);
-            var channel = [];
-            var sum = 0;
-            var avg;
-            var out;
             for (var i = 0; i < origData.data.length; i+=4) {
               origData.data[i] = 0;
               origData.data[i+1] = 0;
               origData.data[i+3] = 0;
             }
+            var sum = 0;
             for (var i = 0; i < origData.data.length; i++){
               sum = sum+origData.data[i];
             }
-            avg = sum/(CANVAS_WIDTH*CANVAS_HEIGHT);
-            out = avg.toFixed(2);
-            socket.emit('output',out);
+            socket.emit('sum',sum, CANVAS_WIDTH, CANVAS_HEIGHT);
           }
         };
         rafId = requestAnimationFrame(drawVideoFrame);
