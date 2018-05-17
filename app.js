@@ -20,7 +20,8 @@ io.on('connection',function(socket){
       var conc;
       avg = sum/(CANVAS_WIDTH*CANVAS_HEIGHT);
       conc = (avg-0.5557)/0.3883;
-      out = conc.toFixed(2);
+      var outconc = conc.toFixed(2);
+      out = "The concentration is "+outconc+"mg/L"
       io.emit('response',out);
     });
 });
