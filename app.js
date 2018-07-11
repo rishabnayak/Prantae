@@ -2,13 +2,13 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const cv = require('opencv2');
 
 app.use(express.static(__dirname + '/views'));
 app.engine('html', require('ejs').renderFile);
 app.get('/', (req, res) => {
   res.render('homepage.html');
   io.on('connection',function(socket){
+      console.log('user connected');
       socket.on('sum', function(sum, CANVAS_WIDTH, CANVAS_HEIGHT){
         var avg;
         var out;
@@ -20,9 +20,6 @@ app.get('/', (req, res) => {
         io.emit('response',out);
       });
   });
-});
-app.get('/results', (req, res) => {
-  res.render('results.html');
 });
 http.listen(8080, () => {
   console.log("View at localhost:8080");

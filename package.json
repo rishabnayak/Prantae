@@ -1,7 +1,6 @@
 {
   "name": "imagecapture_nodejs",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "dependencies": {
     "clarifai": "^2.7.1",
@@ -28,5 +27,6 @@
   "bugs": {
     "url": "https://github.com/rishab2113/ImageCapture_nodejs/issues"
   },
-  "homepage": "https://github.com/rishab2113/ImageCapture_nodejs#readme"
+  "homepage": "https://github.com/rishab2113/ImageCapture_nodejs#readme",
+  "description": ""
 }
